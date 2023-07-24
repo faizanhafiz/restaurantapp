@@ -1,80 +1,114 @@
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
-import { View, Text, TextInput, StyleSheet,TouchableOpacity } from "react-native";
+import CustomeInput from "../Components/CustomeInput";
+import CustomeButton from "../Components/CustomeButton";
 
+
+const HandleLogin = () => {
+  console.warn("Login pressed");
+}
+
+const pressOn = () => {
+  console.warn("Presss on");
+}
 const Login = () => {
+
   return (
     <View style={styles.container}>
-      <Text style={styles.headerStyle}>Login</Text>
+            <Image source={require('../assets/favicon.png')} style={[styles.image,{ width: 120,height:80 ,marginVertical:20}]} />
 
-      <TextInput placeholder="@ Email" style={styles.input} />
+ 
+      <>
+        <Text style={styles.textTitle}>Login To your Account</Text>
 
-      <TextInput placeholder="Password" style={styles.input} />
 
-      <TouchableOpacity
-        style={{ width: "80%", margin: 20 }}
-        onPress={console.log("signup pressed")}
-      >
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
+
+        <CustomeInput placeholder="Email" keyBoardType="email-address" secureText={false} />
+
+        <CustomeInput placeholder="Password" secureText={true} />
+
+
+        <CustomeButton onPress={HandleLogin} text="Login"></CustomeButton>
+
+
+
+
+
+
+        <Text style={{ fontSize: 14, marginTop: 40 }}>- Or sign in with -</Text>
+
+        <View style={styles.LowerButton}>
+
+          <TouchableOpacity style={styles.button} >
+            <Image source={require("../assets/googlelogo.png")} style={[styles.image, { width: 30 }]} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} >
+            <Image source={require("../assets/facebooklogo.png")} style={styles.image} />
+          </TouchableOpacity>
+
         </View>
-      </TouchableOpacity>
 
-      <View style={styles.row}>
-        <Text style={styles.text}>New User?</Text>
-        <TouchableOpacity  onPress={console.log("login pressed")}><Text style={{color:'blue',fontSize:16}} >SignUp</Text></TouchableOpacity>
+      </>
+
+
+      <View style={{ flexDirection: 'row' }}>
+        <Text style={styles.textStyle} >Don't have  an account? </Text><TouchableOpacity  ><Text style={[styles.textStyle, { color: 'blue' }]} >Sign up</Text></TouchableOpacity>
+
+    
+
       </View>
+
     </View>
   );
 };
 
+export default Login;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#fff",
     width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    
+
+
+  },
+  textTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    flexDirection: "row",
+    marginHorizontal: 40,
+    marginVertical: 20,
+
+
+
+
+    alignSelf: 'flex-start'
+
+
+
   },
   button: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    backgroundColor: "#fff", // Customize the button background color
+    padding: 10,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  buttonText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+  image: {
+    width: 50, // Customize the image width
+    height: 50, // Customize the image height
+    resizeMode: "contain", // Adjust the image resizing mode as needed
   },
-  input: {
-    width: "80%",
-    height: 50,
-    borderColor: "#ccc",
-    borderBottomWidth: 1,
+  LowerButton: {
+    flexDirection: 'row',
+    marginVertical: 20,
+    justifyContent: 'space-evenly',
 
-    marginBottom: 20,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    backgroundColor: "#fff",
+    width: '60%'
   },
-  headerStyle: {
-    fontSize: 30,
-    fontWeight: "bold",
-    marginBottom: 50,
-    color: "#007bff",
-  },
-  row: {
-    marginTop:10,
-    flexDirection: 'row', // Aligns children in a row horizontally
-    alignItems: 'center', // Aligns children vertically in the center
-  },
-  text: {
-    marginRight: 8, // Add some space between the text and the icon
-    fontSize: 16,
-  },
+  textStyle: {
+    fontSize: 15,
+    fontWeight: 500
+  }
 });
-
-export default Login;

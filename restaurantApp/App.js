@@ -1,9 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
-import AuthStackNavigator from './Navigators/AuthNavigator/AuthStackNavigator'
+ 
+import CustomeInput from './Components/CustomeInput';
 
-import { NavigationContainer } from '@react-navigation/native';
+import SignUp from './Screens/SignUp';
+import Login from './Screens/Login';
 
 
 export default function App() {
@@ -11,10 +13,8 @@ export default function App() {
     <View style={styles.container}>
       
    
-   
-   <NavigationContainer>
-    <AuthStackNavigator/>
-   </NavigationContainer>
+      <Login/>
+    
       
 
 
@@ -28,6 +28,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width:'100%',
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
