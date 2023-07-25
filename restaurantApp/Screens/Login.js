@@ -1,36 +1,40 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import CustomeInput from "../Components/CustomeInput";
 import CustomeButton from "../Components/CustomeButton";
 
 
 const HandleLogin = () => {
-  console.warn("Login pressed");
+  console.warn(email+"--->"+password);
 }
 
-const pressOn = () => {
-  console.warn("Presss on");
-}
-const Login = () => {
+
+const Login = ({navigation}) => {
+
+  [email,setEmail] = useState();
+  [password,setPassword] = useState();
 
   return (
     <View style={styles.container}>
-            <Image source={require('../assets/favicon.png')} style={[styles.image,{ width: 120,height:80 ,marginVertical:20}]} />
 
+       
+      <Image source={require('../assets/applogo.jpg')} style={[styles.image,{width:100,height:100, marginVertical:20}]} />
+
+       
  
       <>
         <Text style={styles.textTitle}>Login To your Account</Text>
 
 
 
-        <CustomeInput placeholder="Email" keyBoardType="email-address" secureText={false} />
+        <CustomeInput placeholder="Email" keyBoardType="email-address" secureText={false} setValue={setEmail} />
 
-        <CustomeInput placeholder="Password" secureText={true} />
+        <CustomeInput placeholder="Password" secureText={true} setValue={setPassword} />
 
 
         <CustomeButton onPress={HandleLogin} text="Login"></CustomeButton>
 
-
+        <TouchableOpacity style={{alignSelf:'flex-start',marginHorizontal:40}}><Text style={{color:'blue',fontSize:16}}>ForgotPassword</Text></TouchableOpacity>
 
 
 
@@ -53,7 +57,7 @@ const Login = () => {
 
 
       <View style={{ flexDirection: 'row' }}>
-        <Text style={styles.textStyle} >Don't have  an account? </Text><TouchableOpacity  ><Text style={[styles.textStyle, { color: 'blue' }]} >Sign up</Text></TouchableOpacity>
+        <Text style={styles.textStyle} >Don't have  an account? </Text><TouchableOpacity  onPress={()=>navigation.navigate("signupScreen")} ><Text style={[styles.textStyle, { color: 'blue' }]} >Sign up</Text></TouchableOpacity>
 
     
 
@@ -71,6 +75,10 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
+    
+   
+    backgroundColor: '#fff',
+   
     
 
 

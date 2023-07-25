@@ -1,24 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View ,StatusBar} from 'react-native';
 
- 
+import { NavigationContainer } from '@react-navigation/native';
 import CustomeInput from './Components/CustomeInput';
 
 import SignUp from './Screens/SignUp';
 import Login from './Screens/Login';
+import AuthStackNavigator from './Navigators/AuthNavigator/AuthStackNavigator';
 
 
 export default function App() {
   return (
-    <View style={styles.container}>
+     
       
    
-      <Login/>
+      <NavigationContainer>
+        
+        <AuthStackNavigator/>
+
+      </NavigationContainer>
     
       
 
 
-    </View>
+     
 
   );
 

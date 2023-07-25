@@ -7,6 +7,7 @@ const CustomeInput = ({
   textvalue,
   secureText ,
   keyBoardType="default",
+  setValue
 }) => {
   return (
     <TextInput
@@ -16,6 +17,8 @@ const CustomeInput = ({
       style={styles.input}
       keyboardAppearance="light"
       keyboardType={keyBoardType}
+       
+      onChangeText={(text)=>setValue(text)}
       
     />
   );
