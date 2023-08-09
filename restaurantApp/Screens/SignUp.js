@@ -1,17 +1,62 @@
-import { StyleSheet, Text, View,TouchableOpacity,Image } from 'react-native'
+import { StyleSheet,Platform, Text,SafeAreaView, View,TouchableOpacity,Image,KeyboardAvoidingView } from 'react-native'
 import React, { useState } from 'react'
 import CustomeInput from '../Components/CustomeInput'
+import AppwriterService from '../Service/AppwriterService' 
+import { EmailVerification } from '../Service/EmailVerification'
 
-import CustomeButton
- from '../Components/CustomeButton'
-const HandleSignup=()=>{
-  console.warn(email+" .."+password);
-}
+ 
+ 
+import CustomeButton from '../Components/CustomeButton'
+
+
+const appwriteService = new AppwriterService();
+
+
+
+
+
+
 const SignUp = ({navigation}) => {
   [email ,setEmail] = useState();
   [password,setPassword] = useState();
+  [loading ,setLoading] = useState(false);
+
+
+  const HandleSignup= ()=>{
+
+    setLoading(true);
+    const promise =  appwriteService.createUser({email,password});
+
+    
+    promise.then((response)=>{
+
+        setLoading(false);
+        console.warn("User is created");
+       console.log(response);
+        navigation.navigate("loginScreen");
+
+
+      })
+      .catch((error)=>{
+        setLoading(false);
+        console.warn(error);
+      })
+
+ 
+}
+
+
+
+
   return (
-    <View style={styles.container}>
+     
+   
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        style={[styles.container,{marginTop:'25%'}]}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior for iOS and Android
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0} // Offset to account for headers
+      >
 
               <Text style={styles.textTitle}>Create your Acount</Text>
               <CustomeInput placeholder="Email" keyBoardType="email-address" secureText={false}  setValue={setEmail}/>
@@ -20,6 +65,9 @@ const SignUp = ({navigation}) => {
               <CustomeButton onPress={HandleSignup} text="Sign up"></CustomeButton>
 
               <Text style={{ fontSize: 14, marginTop: 40 }}>- Or sign up with -</Text>
+
+      
+            
 
               <View style={styles.LowerButton}>
 
@@ -38,9 +86,11 @@ const SignUp = ({navigation}) => {
     
 
       </View>
+      
+      </KeyboardAvoidingView>
 
-
-    </View>
+    </SafeAreaView>
+     
   )
 }
 
@@ -54,6 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     
     backgroundColor: '#fff',
+    height:'100%'
     
     
 

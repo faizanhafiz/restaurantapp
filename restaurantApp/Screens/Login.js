@@ -1,68 +1,107 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  ActivityIndicator,
+  Image,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import React, { useState } from "react";
 import CustomeInput from "../Components/CustomeInput";
 import CustomeButton from "../Components/CustomeButton";
 
+import AppwriterService from "../Service/AppwriterService";
+
+const appWriterservice = new AppwriterService();
 
 const HandleLogin = () => {
-  console.warn(email+"--->"+password);
-}
+  setLoading(true);
+  appWriterservice.login({ email, password })
+  .then((response) => {
+    setLoading(false);
+    console.warn("User Logged In");
+    console.log(response)
+  })
+  .catch(err=>{
+    setLoading(false);
+    console.warn("Something went wrong"+err)
 
+  });
+};
 
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
+  [email, setEmail] = useState();
+  [password, setPassword] = useState();
 
-  [email,setEmail] = useState();
-  [password,setPassword] = useState();
+  [loading, setLoading] = useState(false);
 
   return (
     <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={[styles.container, { marginTop: "50%" }]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"} // Adjust behavior for iOS and Android
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0} // Offset to account for headers
+      >
+        {/* <Image source={require('../assets/applogo.jpg')} style={[styles.image,{width:100,height:100, marginVertical:20}]} /> */}
 
-       
-      <Image source={require('../assets/applogo.jpg')} style={[styles.image,{width:100,height:100, marginVertical:20}]} />
-
-       
- 
-      <>
         <Text style={styles.textTitle}>Login To your Account</Text>
 
+        <CustomeInput
+          placeholder="Email"
+          keyBoardType="email-address"
+          secureText={false}
+          setValue={setEmail}
+        />
 
-
-        <CustomeInput placeholder="Email" keyBoardType="email-address" secureText={false} setValue={setEmail} />
-
-        <CustomeInput placeholder="Password" secureText={true} setValue={setPassword} />
-
+        <CustomeInput
+          placeholder="Password"
+          secureText={true}
+          setValue={setPassword}
+        />
 
         <CustomeButton onPress={HandleLogin} text="Login"></CustomeButton>
 
-        <TouchableOpacity style={{alignSelf:'flex-start',marginHorizontal:40}}><Text style={{color:'blue',fontSize:16}}>ForgotPassword</Text></TouchableOpacity>
-
-
-
+        <TouchableOpacity
+          onPress={() => navigation.navigate("forgotpasswdScreen")}
+          style={{ alignSelf: "flex-start", marginHorizontal: 40 }}
+        >
+          <Text style={{ color: "blue", fontSize: 16 }}>ForgotPassword</Text>
+        </TouchableOpacity>
 
         <Text style={{ fontSize: 14, marginTop: 40 }}>- Or sign in with -</Text>
 
         <View style={styles.LowerButton}>
-
-          <TouchableOpacity style={styles.button} >
-            <Image source={require("../assets/googlelogo.png")} style={[styles.image, { width: 30 }]} />
+          <TouchableOpacity style={styles.button}>
+            <Image
+              source={require("../assets/googlelogo.png")}
+              style={[styles.image, { width: 30 }]}
+            />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} >
-            <Image source={require("../assets/facebooklogo.png")} style={styles.image} />
+          <TouchableOpacity style={styles.button}>
+            <Image
+              source={require("../assets/facebooklogo.png")}
+              style={styles.image}
+            />
           </TouchableOpacity>
-
         </View>
 
-      </>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.textStyle}>Don't have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("signupScreen")}>
+            <Text style={[styles.textStyle, { color: "blue" }]}>Sign up</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
 
-
-      <View style={{ flexDirection: 'row' }}>
-        <Text style={styles.textStyle} >Don't have  an account? </Text><TouchableOpacity  onPress={()=>navigation.navigate("signupScreen")} ><Text style={[styles.textStyle, { color: 'blue' }]} >Sign up</Text></TouchableOpacity>
-
-    
-
-      </View>
-
+      <Modal visible={loading} transparent={true} animationType="fade">
+        <View style={styles.modalContainer}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -75,28 +114,17 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    
-   
-    backgroundColor: '#fff',
-   
-    
 
-
+    backgroundColor: "#fff",
   },
   textTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     flexDirection: "row",
     marginHorizontal: 40,
     marginVertical: 20,
 
-
-
-
-    alignSelf: 'flex-start'
-
-
-
+    alignSelf: "flex-start",
   },
   button: {
     backgroundColor: "#fff", // Customize the button background color
@@ -109,14 +137,20 @@ const styles = StyleSheet.create({
     resizeMode: "contain", // Adjust the image resizing mode as needed
   },
   LowerButton: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginVertical: 20,
-    justifyContent: 'space-evenly',
+    justifyContent: "space-evenly",
 
-    width: '60%'
+    width: "60%",
   },
   textStyle: {
     fontSize: 15,
-    fontWeight: 500
-  }
+    fontWeight: 500,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+  },
 });

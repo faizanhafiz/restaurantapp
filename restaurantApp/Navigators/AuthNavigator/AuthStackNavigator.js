@@ -1,38 +1,37 @@
-import { createStackNavigator } from '@react-navigation/stack';
-import Login from '../../Screens/Login';
-import SignUp from '../../Screens/SignUp';
-import ForgotPassword from '../../Screens/ForgotPassword';
-import Verification from '../../Screens/Verification';
-import ResetPassword from '../../Screens/ResetPassword';
-
+import { createStackNavigator } from "@react-navigation/stack";
+import Login from "../../Screens/Login";
+import SignUp from "../../Screens/SignUp";
+import ForgotPassword from "../../Screens/ForgotPassword";
+import Verification from "../../Screens/Verification";
+import ResetPassword from "../../Screens/ResetPassword";
+import ProductScreen from "../../Screens/ProductScreen";
+import Cart from "../../Screens/Cart";
 
 const Stack = createStackNavigator();
 
-const  AuthStackNavigator= ()=> {
+const AuthStackNavigator = () => {
   return (
-    <Stack.Navigator 
-    screenOptions={{
-      headerShown: false, // Hide the header for all screens
-    }} >
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false, // Hide the header for all screens
+      }}
+    >
+      <Stack.Screen name="CartScreen" component={Cart} />
 
-  <Stack.Screen name="signupScreen" component={SignUp} />
+      <Stack.Screen name="productScreen" component={ProductScreen} />
+      <Stack.Screen name="signupScreen" component={SignUp} />
 
-             <Stack.Screen name="loginScreen" component={Login} />
+      <Stack.Screen name="loginScreen" component={Login} />
 
-            <Stack.Screen name="forgotpasswdScreen" component={ForgotPassword} />
+      <Stack.Screen name="forgotpasswdScreen" component={ForgotPassword} />
 
-            <Stack.Screen name="resetPasswordScreen" component={ResetPassword} />
+      <Stack.Screen name="resetPasswordScreen" component={ResetPassword} />
 
-          <Stack.Screen name="verificationScreen" component={Verification} />
+      <Stack.Screen name="verificationScreen" component={Verification} />
 
       {/* jsnj */}
-
-
-
-      
-      
     </Stack.Navigator>
   );
-}
+};
 
 export default AuthStackNavigator;
