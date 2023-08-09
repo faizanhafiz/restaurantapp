@@ -18,6 +18,7 @@ const ProductCarousel = (props) => {
     await axios.post(`${addTocartApi}/${item.id}/64cbef140db1bd4551a25524`)
     .then((response)=>{
       if(response.status==200){
+        
 
         console.warn(item.productName+" id Added");
 
@@ -48,7 +49,7 @@ const ProductCarousel = (props) => {
     } catch (error) {
       throw new Error("Error fetching data: " + error.message);
     }
-  };
+  };r
 
   useEffect(() => {
     fetchProductsData(getProductListApi)

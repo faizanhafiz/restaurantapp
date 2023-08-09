@@ -8,18 +8,21 @@ import {
   FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-const deviceWidth = Dimensions.get("window").width;
 import Icon from "react-native-vector-icons/FontAwesome";
-var  total =0;
+
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
+var tmp = 0;
 const getCartApi = "http://192.168.199.41:8080/user/getCart";
 //    example : http://192.168.199.41:8080/user/getCart/<userId>
-
 const Cart = () => {
   const [cartlist, setCartList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
 
-  const[loading,setLoading] = useState(true);
-
-  
+  const checkOut = () => {
+    console.warn("Checkout pressed");
+  };
 
   const CartItems = async (userId) => {
     try {
@@ -35,19 +38,6 @@ const Cart = () => {
     }
   };
 
-  
-
-   const getTotal = () => {
-                 
-                  cartlist.forEach((item)=>{
-                                    total+=item.quantity*item.price;
-                      console.log(total);    
-                  })
-
-                  console.log(total);
-
-                };
-
   useEffect(() => {
     CartItems("64cbef140db1bd4551a25524")
       .then(async (data) => {
@@ -57,113 +47,129 @@ const Cart = () => {
 
         setLoading(false);
       })
-      .catch((err) => {console.log(err);
-                  setLoading(false);
-
-      }
-      
-      );
-
-      
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
   }, []);
+
+  const getTotal = () => {
+    cartlist.forEach((item) => {
+      tmp += item.quantity * item.price;
+      console.log(tmp);
+    });
+
+    console.log(tmp);
+    setTotal(tmp);
+  };
 
   const renderCartItem = ({ item }) => {
     return (
-      <View style={{ width: "95%", height: 100 ,marginTop:20,flexDirection:'row' ,justifyContent:'space-between',flexWrap:'wrap'}}>
-         <View             style={{ width: '30%', height: '100%', borderRadius: 10 ,elevation:5}}>
-         <Image
+      <View style={styles.cartItemContainer}>
+        <View style={styles.imageContainer}>
+          <Image
             source={{ uri: item.imageUrl }}
-            style={{ width: '100%', height: '100%', borderRadius: 10 }}
+            style={styles.image}
           />
-         </View>
-
-         <View style={{justifyContent:'center',alignItems:'center'}}>
-                  <Text style={styles.cartlisttext}>{item.productName}</Text>
-                  <Text style={styles.cartlisttext}> {"\u20B9"} {item.price}</Text>
         </View>
-
-        
-                  <View  style={{justifyContent:'center',alignItems:'center'}}>
-                  <TouchableOpacity style={{justifyContent:'center'}}>
-                                    <Text style={{fontSize:30}}>+</Text>
-                                    </TouchableOpacity>
-                                    <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-                                    <Text  style={{width:30,height:30,backgroundColor:'#000',color:'#fff',textAlign:'center',borderRadius:5}}>{item.quantity}</Text>
-
-                                    </View>
-                                    <TouchableOpacity style={{justifyContent:'center'}}>
-                                    <Text style={{fontSize:30}}>-</Text>
-                                    </TouchableOpacity>
-
-                  </View>
-       
+  
+        <View style={styles.itemDetailsContainer}>
+          <Text style={styles.cartlisttext}>{item.productName}</Text>
+          <Text style={styles.cartlisttext}>
+            {"\u20B9"} {item.price}
+          </Text>
+        </View>
+  
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity style={styles.quantityButton}>
+            <Text style={styles.quantityButtonText}>+</Text>
+          </TouchableOpacity>
+          <View style={styles.quantityBox}>
+            <Text style={styles.quantityText}>
+              {item.quantity}
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.quantityButton}>
+            <Text style={styles.quantityButtonText}>-</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
 
-  return (
-    loading?<Text>Loading.............</Text>:
+  return loading ? (
+    <Text>Loading.............</Text>
+  ) : (
     <View style={styles.container}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <TouchableOpacity
-          style={{ flexDirection: "row", alignItems: "center" }}
-        >
+      <View style={styles.headerContainer}>
+        <TouchableOpacity style={styles.header} onPress={() => console.log("Back button pressed")}>
           <Icon name="arrow-left" size={25} color="#000" />
           <Text style={styles.headingTitle}>Cart</Text>
         </TouchableOpacity>
 
-        <View style={styles.profileimage}>
+        <View style={styles.profileImage}>
           <Image
             source={{
               uri: "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
             }}
-            style={{ width: "100%", height: "100%" }}
+            style={styles.profileImage}
           />
         </View>
       </View>
 
-      <Text style={{ fontSize: 24, fontWeight: "bold", color: "#000" }}>
-        My
-      </Text>
-      <Text style={{ fontSize: 24, color: "#000" }}>Cart List</Text>
+      <Text style={styles.sectionTitle}>My Cart List</Text>
 
-      <FlatList
+     
+     <FlatList
         data={cartlist}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
         renderItem={renderCartItem}
+       
       />
+    
 
-      <View style={{height:'10%'}}>
-         <View>
-         <Text>Total</Text>  
-         <Text>{total}</Text>
+      <View style={styles.totalSection}>
+        <View style={styles.totalTextContainer}>
+          <Text style={styles.totalText}>Total</Text>
+          <Text style={styles.totalAmount}>{"\u20B9"} {total}</Text>
+        </View>
 
-                  </View>       
-
+        <View style={styles.checkoutButtonContainer}>
+          <TouchableOpacity onPress={checkOut} style={styles.checkoutButton}>
+            <Text style={styles.checkoutButtonText}>Checkout</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 };
 
-export default Cart;
-
 const styles = StyleSheet.create({
   container: {
-    padding: 40,
+    paddingHorizontal: 10,
+    paddingTop: 40,
     flex: 1,
   },
-  profileimage: {
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profileImage: {
     overflow: "hidden",
     backgroundColor: "#ccc",
     justifyContent: "center",
     alignItems: "center",
-    width: deviceWidth * 0.2,
+    width: windowWidth * 0.2,
     aspectRatio: 1,
-    borderRadius: deviceWidth * 0.5,
+    borderRadius: windowWidth * 0.5,
     borderWidth: 1,
     borderColor: "#FF6200",
-    
   },
   headingTitle: {
     fontSize: 24,
@@ -171,10 +177,111 @@ const styles = StyleSheet.create({
     color: "#000",
     margin: 10,
   },
-  cartlisttext:{
-                  fontSize: 14,
-                  fontWeight: "bold",
-                  color: "#000",
-                  margin: 5,
-  }
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 10,
+  },
+  totalSection: {
+    height: windowHeight * 0.15,
+    backgroundColor: "#fff1",
+    alignItems: "center",
+    justifyContent: "space-around",
+    paddingTop: 10,
+    paddingHorizontal: 5,
+  },
+  totalTextContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  totalAmount: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  checkoutButtonContainer: {
+    height: "50%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkoutButton: {
+    height: "100%",
+    width: "30%",
+    backgroundColor: "#000",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkoutButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  cartItemContainer: {
+    width: "100%",
+    height: 100,
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    elevation:5,
+    backgroundColor:'#fff',
+    borderRadius:10,
+    paddingRight:10
+  },
+  imageContainer: {
+    width: "30%",
+    height: "100%",
+    borderRadius: 10,
+    elevation: 5,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+  },
+  itemDetailsContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cartlisttext: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#000",
+    margin: 5,
+  },
+  quantityContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  quantityButton: {
+    justifyContent: "center",
+  },
+  quantityButtonText: {
+    fontSize: 30,
+  },
+  quantityBox: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 30,
+    height: 30,
+    backgroundColor: "#000",
+    color: "#fff",
+    textAlign: "center",
+    borderRadius: 5,
+  },
+  quantityText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  // Add more styles as needed
 });
+
+export default Cart;
