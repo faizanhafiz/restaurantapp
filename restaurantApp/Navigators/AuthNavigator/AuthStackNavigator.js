@@ -7,6 +7,7 @@ import ResetPassword from "../../Screens/ResetPassword";
 import ProductScreen from "../../Screens/ProductScreen";
 import Cart from "../../Screens/Cart";
 import Checkout from "../../Screens/Checkout";
+import OderConfirmPage from '../../Screens/OrderConfirmPage'
 
 const Stack = createStackNavigator();
 
@@ -17,7 +18,10 @@ const AuthStackNavigator = () => {
         headerShown: false, // Hide the header for all screens
       }}
     >
+
       <Stack.Screen name="CheckoutScreen" component={Checkout}/>
+      <Stack.Screen name ="orderConfirmScreen"  component={OderConfirmPage}/>
+
       <Stack.Screen name="CartScreen" component={Cart} />
 
       <Stack.Screen name="productScreen" component={ProductScreen} />
