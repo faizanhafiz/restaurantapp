@@ -1,23 +1,25 @@
-import { StyleSheet, Text, View ,StatusBar} from 'react-native';
+import { StyleSheet} from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
-import CustomeInput from './Components/CustomeInput';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
-import SignUp from './Screens/SignUp';
-import Login from './Screens/Login';
-import AuthStackNavigator from './Navigators/AuthNavigator/AuthStackNavigator';
+import { AuthProvider } from './Context/AuthContext';
+import AppNav from './Navigators/AppNav';
+import { State } from 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
 
 
 export default function App() {
   return (
      
       
-   
-      <NavigationContainer>
+   <AuthProvider>
+      
+     <AppNav/>
+     <Toast/>
         
-        <AuthStackNavigator/>
 
-      </NavigationContainer>
+       
+    </AuthProvider>
     
       
 

@@ -1,5 +1,5 @@
 import { StyleSheet,Platform, Text,SafeAreaView, View,TouchableOpacity,Image,KeyboardAvoidingView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import CustomeInput from '../Components/CustomeInput'
 import AppwriterService from '../Service/AppwriterService' 
 import { EmailVerification } from '../Service/EmailVerification'
@@ -7,16 +7,14 @@ import { EmailVerification } from '../Service/EmailVerification'
  
  
 import CustomeButton from '../Components/CustomeButton'
-
-
-const appwriteService = new AppwriterService();
-
+import { AuthContext } from '../Context/AuthContext'
 
 
 
 
 
 const SignUp = ({navigation}) => {
+  
   [email ,setEmail] = useState();
   [password,setPassword] = useState();
   [loading ,setLoading] = useState(false);
@@ -24,23 +22,7 @@ const SignUp = ({navigation}) => {
 
   const HandleSignup= ()=>{
 
-    setLoading(true);
-    const promise =  appwriteService.createUser({email,password});
-
     
-    promise.then((response)=>{
-
-        setLoading(false);
-        console.warn("User is created");
-       console.log(response);
-        navigation.navigate("loginScreen");
-
-
-      })
-      .catch((error)=>{
-        setLoading(false);
-        console.warn(error);
-      })
 
  
 }
@@ -64,12 +46,12 @@ const SignUp = ({navigation}) => {
               <CustomeInput placeholder="Confirm Password" secureText={true}  setValue={setPassword}/>
               <CustomeButton onPress={HandleSignup} text="Sign up"></CustomeButton>
 
-              <Text style={{ fontSize: 14, marginTop: 40 }}>- Or sign up with -</Text>
+              {/* <Text style={{ fontSize: 14, marginTop: 40 }}>- Or sign up with -</Text> */}
 
       
             
 
-              <View style={styles.LowerButton}>
+              {/* <View style={styles.LowerButton}>
 
           <TouchableOpacity style={styles.button} >
             <Image source={require("../assets/googlelogo.png")} style={[styles.image, { width: 30 }]} />
@@ -79,11 +61,11 @@ const SignUp = ({navigation}) => {
             <Image source={require("../assets/facebooklogo.png")} style={styles.image} />
           </TouchableOpacity>
 
-        </View>
+        </View> */}
         <View style={{ flexDirection: 'row' }}>
         <Text style={styles.textStyle} >Already have an  account? </Text><TouchableOpacity onPress={()=>navigation.navigate("loginScreen")} ><Text style={[styles.textStyle, { color: 'blue' }]} >Sign in</Text></TouchableOpacity>
 
-    
+     
 
       </View>
       
@@ -101,10 +83,12 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     alignItems: "center",
-    justifyContent: "center",
+    
+    
     
     backgroundColor: '#fff',
-    height:'100%'
+    height:'100%',
+    
     
     
 
@@ -144,6 +128,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     fontSize: 15,
-    fontWeight: 500
+    fontWeight: 500,
+    marginVertical:20
   }
 });

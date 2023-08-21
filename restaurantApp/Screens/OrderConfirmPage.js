@@ -11,7 +11,8 @@ const OrderConfirmPage = () => {
     setIsAnimationPlayed(true);
    };
 
-  return (
+  
+   return (
     <View style={styles.container}>
       
       <View style={{ width: '100%', height: '40%' }}>
@@ -22,7 +23,9 @@ const OrderConfirmPage = () => {
           loop={false}
           resizeMode='cover'
         />
+
       </View>
+      
       {isTextDisplay ? (
         <Text style={styles.text}>Your order Confirmed</Text>
       ) : (

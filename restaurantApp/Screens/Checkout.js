@@ -137,15 +137,15 @@ const Checkout = ({navigation}) => {
 
     
 
-      <StatusBar hidden  />
+      
        
-      <View style={{flexDirection:'row' ,alignItems:'center'}}>
+      {/* <View style={{flexDirection:'row' ,alignItems:'center'}}>
       <TouchableOpacity style={styles.header}>
         <Icon name="arrow-left" size={26} color="#000" />
         
       </TouchableOpacity>
       <Text style={styles.headingTitle}>Check Out</Text>
-      </View>
+      </View> */}
      
 
       <View style={styles.addressSection}>
@@ -206,6 +206,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff9",
     padding: 10,
+    paddingTop:40
   },
   header: {
     flexDirection: "row",

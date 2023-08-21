@@ -1,4 +1,4 @@
-import { StyleSheet,Keyboard, Text, View,TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet,Keyboard,Animated, Text, View,TouchableWithoutFeedback } from 'react-native'
 import React, { useState } from 'react'
 import CustomeInput from '../Components/CustomeInput'
 import CustomeButton from '../Components/CustomeButton'

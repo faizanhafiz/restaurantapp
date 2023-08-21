@@ -5,42 +5,82 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  
+  Dimensions
 } from "react-native";
-import React, { useEffect, useState } from "react";
+
+
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-const addTocartApi ="http://192.168.199.41:8080/user/addToCart";
-const getProductListApi ="http://192.168.199.41:8080/product/products";
+import { AuthContext } from "../Context/AuthContext";
+import { BASE_URL } from "../Utility/config";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
+
+
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
+
 
 const ProductCarousel = (props) => {
+  const {token,showToastOnErrorAddToCart,showToastOnSuccessAddToCart} = useContext(AuthContext);
   [product, setProduct] = useState([]);
-  const addToCart = async (item) => {
 
-    await axios.post(`${addTocartApi}/${item.id}/64cbef140db1bd4551a25524`)
-    .then((response)=>{
-      if(response.status==200){
+
+
+
+  
+
+
+
+
+  //addToCart
+  const addToCart = async (productId) => {
+
+    console.log("token inside addToCart",token);
+    const headers = {
+       'Authorization': `Bearer ${token}`
         
+   };
 
-        console.warn(item.productName+" id Added");
+
+     const url = `${BASE_URL}/user/addToCart/${productId}`;
+     console.log("addTocart url =>",url);
+    try{
+       
+
+      const response = await fetch(url,{
+        headers:headers,
+        method:"POST"
+      })
+
+      if(response.status==200)
+      {
+        
+        showToastOnSuccessAddToCart();
 
       }else{
-        console.warn("not added");
+        showToastOnErrorAddToCart();
+        console.log(response.status);
       }
-    }).catch((err)=>{
-      console.log("Error in add to cart",err);
-    })
 
-   
+    }catch(error)
+    {
+      throw new Error("Error while adding product to cart  : " + error.message);
+    }
+
   };
   
-  //   "productName",
-  //   "imageUrl",
-  //   "price"
-  //   "available"
+  
   
 
-  const fetchProductsData = async (url) => {
+
+  //  fetch Product
+  const fetchProductsData = async () => {
+
+    const url = `${BASE_URL}/product/products`
     try {
-      const response = await fetch(url);
+      const headers = { 'Authorization': `Bearer ${token}` };
+      const response = await fetch(url,{headers});
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -49,16 +89,22 @@ const ProductCarousel = (props) => {
     } catch (error) {
       throw new Error("Error fetching data: " + error.message);
     }
-  };r
+  };
 
   useEffect(() => {
-    fetchProductsData(getProductListApi)
+    
+
+    console.log("token insode Carousel",token);
+    
+    fetchProductsData()
       .then((data) => {
         setProduct(data);
-        console.log(product);
+        
+        
       })
       .catch((err) => {
         console.log("error while fetching product ", err);
+       
       });
   }, []);
 
@@ -91,25 +137,17 @@ const ProductCarousel = (props) => {
          </View>
 
         
-          <TouchableOpacity style={styles.addButton} onPress={()=>addToCart(item)} >
+          <TouchableOpacity style={styles.addButton} onPress={()=>addToCart(item.id)} >
             <Text style={styles.buttonText}>Add To Cart</Text>
           </TouchableOpacity>
            
         </View>
+       
       </View>
     );
   };
 
-  const renderCategoryItem = ({ item }) => {
-    return (
-      <View style={styles.categoryitem}>
-        <Text style={styles.itemText}>{item.title}</Text>
-      </View>
-      // <TouchableOpacity>
-      //   <Text style={styles.itemText}>{item.title}</Text>
-      // </TouchableOpacity>
-    );
-  };
+ 
 
   return (
     <View style={styles.container}>
@@ -149,7 +187,7 @@ const styles = StyleSheet.create({
   },
   items: {
     backgroundColor: "#fff",
-    width: "90%",
+    width: windowWidth*0.9,
     height: 150,
     marginVertical: 10,
     borderRadius: 8,

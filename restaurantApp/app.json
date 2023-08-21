@@ -21,7 +21,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "android": {
+        "config": {
+          "cleartext": true
+        }
+      } 
     },
     "web": {
       "favicon": "./assets/favicon.png"

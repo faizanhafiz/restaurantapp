@@ -7,48 +7,65 @@ import {
   View,
   FlatList,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { BASE_URL } from "../Utility/config";
+import { AuthContext } from "../Context/AuthContext";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 var tmp = 0;
-const getCartApi = "http://192.168.199.41:8080/user/getCart";
-//    example : http://192.168.199.41:8080/user/getCart/<userId>
+const getCartApi = `${BASE_URL}/user/getCart`;
+ 
 const Cart = () => {
   const [cartlist, setCartList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
+  const { token } = useContext(AuthContext);
+
   const checkOut = () => {
     console.warn("Checkout pressed");
   };
 
-  const CartItems = async (userId) => {
+  const CartItems = async () => {
     try {
-      const response = await fetch(`${getCartApi}/${userId}`);
+      const headers = {
+        'Authorization': `Bearer ${token}`
+
+      };
+      const response = await fetch(`${getCartApi}`, {
+        headers: headers,
+        method: "GET"
+      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      const data = await response.json();
-      return data;
+      
+      if(response.ok)
+      {
+        console.log("inside success",response.json());
+        const data = await response.json();
+        return data;
+      }
+      
     } catch (error) {
       console.error("Error fetching data:", error);
-      throw error; // Rethrow the error to handle it at a higher level
+      throw error; 
     }
   };
 
   useEffect(() => {
-    CartItems("64cbef140db1bd4551a25524")
-      .then(async (data) => {
-        await setCartList(data);
+    CartItems()
+      .then( (data) => {
+          setCartList(data);
         console.log(cartlist);
         getTotal();
 
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        console.log("error in getCart",err);
         setLoading(false);
       });
   }, []);
@@ -72,14 +89,14 @@ const Cart = () => {
             style={styles.image}
           />
         </View>
-  
+
         <View style={styles.itemDetailsContainer}>
           <Text style={styles.cartlisttext}>{item.productName}</Text>
           <Text style={styles.cartlisttext}>
             {"\u20B9"} {item.price}
           </Text>
         </View>
-  
+
         <View style={styles.quantityContainer}>
           <TouchableOpacity style={styles.quantityButton}>
             <Text style={styles.quantityButtonText}>+</Text>
@@ -101,7 +118,7 @@ const Cart = () => {
     <Text>Loading.............</Text>
   ) : (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
+      {/* <View style={styles.headerContainer}>
         <TouchableOpacity style={styles.header} onPress={() => console.log("Back button pressed")}>
           <Icon name="arrow-left" size={25} color="#000" />
           <Text style={styles.headingTitle}>Cart</Text>
@@ -115,19 +132,19 @@ const Cart = () => {
             style={styles.profileImage}
           />
         </View>
-      </View>
+      </View> */}
 
       <Text style={styles.sectionTitle}>My Cart List</Text>
 
-     
-     <FlatList
+
+      <FlatList
         data={cartlist}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
         renderItem={renderCartItem}
-       
+
       />
-    
+
 
       <View style={styles.totalSection}>
         <View style={styles.totalTextContainer}>
@@ -148,8 +165,9 @@ const Cart = () => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
-    paddingTop: 40,
+    paddingTop: 50,
     flex: 1,
+    backgroundColor: "#fff9",
   },
   headerContainer: {
     flexDirection: "row",
@@ -178,10 +196,14 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   sectionTitle: {
-    fontSize: 24,
+    // fontSize: 24,
+    // fontWeight: "bold",
+    // color: "#000",
+    // marginBottom: 10,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#000",
-    marginBottom: 10,
+    margin: 5,
   },
   totalSection: {
     height: windowHeight * 0.15,
@@ -213,10 +235,12 @@ const styles = StyleSheet.create({
   checkoutButton: {
     height: "100%",
     width: "30%",
-    backgroundColor: "#000",
+    backgroundColor: "#FF6200",
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
+
+    marginBottom: 10
   },
   checkoutButtonText: {
     color: "#fff",
@@ -224,16 +248,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   cartItemContainer: {
-    width: "100%",
-    height: 100,
-    marginTop: 20,
+    width: windowWidth * 0.9,
+    height: 120,
+    marginHorizontal: 10,
+    marginVertical: 5,
     flexDirection: "row",
     justifyContent: "space-between",
     flexWrap: "wrap",
-    elevation:5,
-    backgroundColor:'#fff',
-    borderRadius:10,
-    paddingRight:10
+    elevation: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10
   },
   imageContainer: {
     width: "30%",
