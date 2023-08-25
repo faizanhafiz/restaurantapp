@@ -15,13 +15,7 @@ const ProductScreen = () => {
     console.log("token inside product Screen",token);
   },[]);
    
-  
-
-  
-   
-
-
-
+ 
   return (
     <View style={styles.container}>
       {/* Header */}

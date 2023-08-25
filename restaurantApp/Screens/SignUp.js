@@ -1,57 +1,116 @@
-import { StyleSheet,Platform, Text,SafeAreaView, View,TouchableOpacity,Image,KeyboardAvoidingView } from 'react-native'
-import React, { useContext, useState } from 'react'
-import CustomeInput from '../Components/CustomeInput'
-import AppwriterService from '../Service/AppwriterService' 
-import { EmailVerification } from '../Service/EmailVerification'
+import {
+  StyleSheet,
+  Platform,
+  Text,
+  SafeAreaView,
+  View,
+  TouchableOpacity,
+  Image,
+  KeyboardAvoidingView,
+  ActivityIndicator
+} from "react-native";
+import React, { useContext, useState } from "react";
+import CustomeInput from "../Components/CustomeInput";
+import AppwriterService from "../Service/AppwriterService";
+import { EmailVerification } from "../Service/EmailVerification";
 
- 
- 
-import CustomeButton from '../Components/CustomeButton'
-import { AuthContext } from '../Context/AuthContext'
+import CustomeButton from "../Components/CustomeButton";
+import { AuthContext } from "../Context/AuthContext";
 
+const SignUp = ({ navigation }) => {
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
+  const { signUp, showToastedSuccess, showToastedError, handleConnection } =
+    useContext(AuthContext);
+  const isValidEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return emailRegex.test(email);
+  };
 
+  const HandleSignup = async () => {
+    const isConnected = handleConnection();
 
+    if (isConnected === false) {
+      showToastedError("No internet connection");
+      return;
+    }
 
-const SignUp = ({navigation}) => {
-  
-  [email ,setEmail] = useState();
-  [password,setPassword] = useState();
-  [loading ,setLoading] = useState(false);
+    setLoading(true);
+    if (!email || !password || !name || !mobile) {
+      setIsLoading(false);
+      showToastedError("Please enter all values");
+    } else if (!isValidEmail(email)) {
+      setIsLoading(false);
+      showToastedError("Please enter a valid email address.");
+    } else if (password.length < 4) {
+      setIsLoading(false);
+      showToastedError("Password must be at least 4 characters long.");
+    }else{
+      const response = await signUp(email, password, name, mobile);
+      if(response.status===200)
+      {
+        response.json()
+        .then((data)=>{
+          const message = data.message;
+          setLoading(false);
+          showToastedSuccess(message);
+        })
+        .catch((err) => {
+          setLoading(false);
+          
+          showToastedSuccess("Something went wrong on the server.");
+          
+        })
+      }
+      else if (response.status === 500) {
+        setIsLoading(false);
+        showToastedError("Something went wrong on the server.");
+      }else {
+        
+        setIsLoading(false);
+        showToastedError("Network issue");
+      }
 
+    }
 
-  const HandleSignup= ()=>{
-
-    
-
- 
-}
-
-
-
+   
+  };
 
   return (
-     
-   
+    isLoading ? (
+      <ActivityIndicator  size='large' color='blue' animating={isLoading} style={styles.activityIndicator} />
+    ) :
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        style={[styles.container,{marginTop:'25%'}]}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior for iOS and Android
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0} // Offset to account for headers
+        style={[styles.container, { marginTop: "25%" }]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"} // Adjust behavior for iOS and Android
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0} // Offset to account for headers
       >
+        <Text style={styles.textTitle}>Create your Acount</Text>
+        <CustomeInput placeholder="Name" setValue={setName} />
+        <CustomeInput
+          placeholder="Email"
+          keyBoardType="email-address"
+          secureText={false}
+          setValue={setEmail}
+        />
+        <CustomeInput placeholder="Mobile" setValue={setMobile} />
+        <CustomeInput
+          placeholder="Password"
+          secureText={true}
+          setValue={setPassword}
+        />
 
-              <Text style={styles.textTitle}>Create your Acount</Text>
-              <CustomeInput placeholder="Email" keyBoardType="email-address" secureText={false}  setValue={setEmail}/>
-              <CustomeInput placeholder="Password" secureText={true} setValue={setPassword} />
-              <CustomeInput placeholder="Confirm Password" secureText={true}  setValue={setPassword}/>
-              <CustomeButton onPress={HandleSignup} text="Sign up"></CustomeButton>
+        <CustomeButton onPress={HandleSignup} text="Sign up"></CustomeButton>
 
-              {/* <Text style={{ fontSize: 14, marginTop: 40 }}>- Or sign up with -</Text> */}
+        {/* <Text style={{ fontSize: 14, marginTop: 40 }}>- Or sign up with -</Text> */}
 
-      
-            
-
-              {/* <View style={styles.LowerButton}>
+        {/* <View style={styles.LowerButton}>
 
           <TouchableOpacity style={styles.button} >
             <Image source={require("../assets/googlelogo.png")} style={[styles.image, { width: 30 }]} />
@@ -62,52 +121,46 @@ const SignUp = ({navigation}) => {
           </TouchableOpacity>
 
         </View> */}
-        <View style={{ flexDirection: 'row' }}>
-        <Text style={styles.textStyle} >Already have an  account? </Text><TouchableOpacity onPress={()=>navigation.navigate("loginScreen")} ><Text style={[styles.textStyle, { color: 'blue' }]} >Sign in</Text></TouchableOpacity>
-
-     
-
-      </View>
-      
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.textStyle}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("loginScreen")}>
+            <Text style={[styles.textStyle, { color: "blue" }]}>Sign in</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
-
     </SafeAreaView>
-     
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;
 
 const styles = StyleSheet.create({
+  activityIndicator: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     width: "100%",
     alignItems: "center",
-    
-    
-    
-    backgroundColor: '#fff',
-    height:'100%',
-    
-    
-    
 
-
+    backgroundColor: "#fff",
+    height: "100%",
   },
   textTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     flexDirection: "row",
     marginHorizontal: 40,
     marginVertical: 20,
 
-
-
-
-    alignSelf: 'flex-start'
-
-
-
+    alignSelf: "flex-start",
   },
   button: {
     backgroundColor: "#fff", // Customize the button background color
@@ -120,15 +173,15 @@ const styles = StyleSheet.create({
     resizeMode: "contain", // Adjust the image resizing mode as needed
   },
   LowerButton: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginVertical: 20,
-    justifyContent: 'space-evenly',
+    justifyContent: "space-evenly",
 
-    width: '60%'
+    width: "60%",
   },
   textStyle: {
     fontSize: 15,
     fontWeight: 500,
-    marginVertical:20
-  }
+    marginVertical: 20,
+  },
 });

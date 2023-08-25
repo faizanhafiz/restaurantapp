@@ -1,23 +1,22 @@
-import { StyleSheet} from 'react-native';
+import { StyleSheet,ActivityIndicator} from 'react-native';
 
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
+ import AppNav from './Navigators/AppNav';
+ import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from './Context/AuthContext';
-import AppNav from './Navigators/AppNav';
-import { State } from 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
-
+ 
 
 export default function App() {
+
+  
   return (
      
       
    <AuthProvider>
-      
-     <AppNav/>
+      <AppNav/>
      <Toast/>
         
-
        
     </AuthProvider>
     
@@ -38,5 +37,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-  },
+  }
 });
