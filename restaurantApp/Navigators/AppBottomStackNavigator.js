@@ -12,6 +12,7 @@ const productName = 'Home';
 const cartName = 'Cart';
 const checkoutName = 'Checkout';
 const orderName = 'Order'; // Changed to "Order"
+const orderConfirm = 'OrderConfirmPage'
 
 const Tab = createBottomTabNavigator();
 
@@ -45,8 +46,8 @@ export const AppBottomStackNavigator = () => {
       <Tab.Screen name={productName} component={ProductScreen} options={{ headerShown: false }} />
       <Tab.Screen name={cartName} component={Cart} options={{ headerShown: false }} />
       <Tab.Screen name={checkoutName} component={Checkout} options={{ headerShown: false ,tabBarButton:()=>null}} />
-      
       <Tab.Screen name={orderName} component={Order} options={{ headerShown: false }} />
+      <Tab.Screen name={orderConfirm}  component={OrderConfirmPage} options={{headerShown:false,tabBarButton:()=>null}}/>
     </Tab.Navigator>
   );
 };

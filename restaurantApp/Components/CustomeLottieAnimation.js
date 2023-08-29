@@ -7,7 +7,7 @@ const CustomeLottieAnimation = ({animationloc}) => {
       
               
   return (
-    <View style={styles.container}>
+    <View style={[StyleSheetList.absoluteFillobject,styles.container]}>
       <LottieView
          
          autoPlay
@@ -27,8 +27,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    width:'100%',
-    height:'100%'
+    
   },
   text: {
     fontSize: 18,

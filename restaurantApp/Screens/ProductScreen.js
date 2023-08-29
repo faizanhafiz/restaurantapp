@@ -1,32 +1,76 @@
-import { View, Text, StyleSheet, Dimensions, Image, TextInput } from "react-native";
-import React, { useContext, useEffect } from "react";
+import { View, Text, StyleSheet, Dimensions, Image, TextInput ,ActivityIndicator} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
 import ProductCarousel from "../Components/ProductCarousel";
 import { AuthContext } from "../Context/AuthContext";
+import Loader from "./Loader";
 
 const deviceWidth = Dimensions.get("window").width;
 
 const ProductScreen = () => {
 
-  const {token}  = useContext(AuthContext);
+  const [isLoading ,setisLoading] = useState(false);
+
+  const {token,userData,getUserData}  = useContext(AuthContext);
+
+   const [userName ,setUserName]  = useState('');
+
+  
 
 
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setisLoading(true);
+      console.log("token inside product Screen", token);
+      
+      await getUserData();
+      
+  
+     
+     
+        setisLoading(false);
+      
+      
+    };
+  
+    fetchData();
+  }, []);
 
   useEffect(()=>{
-    console.log("token inside product Screen",token);
-  },[]);
-   
+    console.log("user ==",userData)
+    if (userData && userData.userName) {
+      const name = userData.userName;
+      const firstName = name.split(' ')[0];
+      const formattedFirstName =
+        firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+        setUserName(formattedFirstName);
+    } else {
+      // Handle the case where userData or userName is undefined
+    }
+
+  },[userData])
+  
+
+  
+  
  
   return (
+    // isLoading ? (
+    //   <ActivityIndicator size="large" style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }} color="#E85F5C"  />
+       
+    // ) : 
+    <>
     <View style={styles.container}>
       {/* Header */}
      <View  style={{ paddingHorizontal:20}}>
 
      <View style={styles.header}>
         <View>
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#FF6200" }}>Hi Faizan</Text>
+          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#FF6200" }}>Hi {userName}</Text>
           <Text style={{ fontSize: 18, fontWeight: "bold", color: "#000" }}>Order & Eat</Text>
         </View>
-        <View style={styles.profileimage}>
+        {/* <View style={styles.profileimage}>
           
           <Image
             source={{
@@ -35,7 +79,7 @@ const ProductScreen = () => {
             }}
             style={{ width: "100%", height: "100%" }}
           />
-          </View>
+          </View> */}
 
       </View>
 
@@ -60,9 +104,12 @@ const ProductScreen = () => {
 
       
         
-        <ProductCarousel />
+        <ProductCarousel  setisLoading={setisLoading} />
       </View>
     </View>
+    {isLoading ?<Loader/>:null}
+
+    </>
 
   );
 };
@@ -73,6 +120,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
    
     paddingTop: "10%",
+  },
+  activityIndicator: {
+    
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     flexDirection: "row",

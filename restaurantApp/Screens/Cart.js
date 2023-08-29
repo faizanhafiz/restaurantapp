@@ -6,88 +6,114 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BASE_URL } from "../Utility/config";
 import { AuthContext } from "../Context/AuthContext";
+import Loader from "./Loader";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 var tmp = 0;
 const getCartApi = `${BASE_URL}/user/getCart`;
- 
-const Cart = () => {
+
+const Cart = ({ navigation }) => {
   const [cartlist, setCartList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isloading, setIsloading] = useState(false);
   const [total, setTotal] = useState(0);
 
-  const { token } = useContext(AuthContext);
+  const {
+    token,
+    cart,
+    getCart,
+    userData,
+    showToastedError,
+    showToastedSuccess,
+  } = useContext(AuthContext);
 
-  const checkOut = () => {
-    console.warn("Checkout pressed");
-  };
-
-  const CartItems = async () => {
+  const checkOut = async () => {
     try {
-      const headers = {
-        'Authorization': `Bearer ${token}`
-
-      };
-      const response = await fetch(`${getCartApi}`, {
-        headers: headers,
-        method: "GET"
+      setIsloading(true);
+      await fetch(`${BASE_URL}/order/placeOrder`, {
+        method: "POST",
+        headers:{
+          "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+        }
+      }).then((response) => {
+        if (response.status === 200) {
+          setIsloading(false);
+          showToastedSuccess("order placed");
+        } else if (response.status === 400) {
+          setIsloading(false);
+          console.log("bad request");
+        } else if (response.status === 500) {
+          setIsloading(false);
+          showToastedError("server error");
+          console.log("server error");
+        }else{
+          setIsloading(false);
+          console.log("seomething went wrong",response.status);
+        }
       });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      
-      if(response.ok)
-      {
-        console.log("inside success",response.json());
-        const data = await response.json();
-        return data;
-      }
-      
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      throw error; 
+    } catch (err) {
+      setIsloading(false);
+      console.log("error inside checkout", err);
     }
   };
 
   useEffect(() => {
-    CartItems()
-      .then( (data) => {
-          setCartList(data);
-        console.log(cartlist);
-        getTotal();
-
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log("error in getCart",err);
-        setLoading(false);
-      });
+    // const fetchData = async () => {
+    //   setIsloading(true);
+    //   await getCart();
+    //   setIsloading(false);
+    // };
+    // fetchData();
   }, []);
 
-  const getTotal = () => {
-    cartlist.forEach((item) => {
-      tmp += item.quantity * item.price;
-      console.log(tmp);
-    });
+  const increaseCartProductQuantity = async (productId) => {
+    await fetch(`${BASE_URL}/user/incrCartItem/${productId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          getCart();
+        }
+      })
+      .catch((error) => {
+        console.log("error in increasecartProduct", error);
+      });
+  };
 
-    console.log(tmp);
-    setTotal(tmp);
+  const decreaseCartProductQuantity = async (productId) => {
+    await fetch(`${BASE_URL}/user/decCartItem/${productId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          getCart();
+        }
+      })
+      .catch((error) => {
+        console.log("error in decreasecartProduct", error);
+      });
   };
 
   const renderCartItem = ({ item }) => {
     return (
       <View style={styles.cartItemContainer}>
         <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: item.imageUrl }}
-            style={styles.image}
-          />
+          <Image source={{ uri: item.imageUrl }} style={styles.image} />
         </View>
 
         <View style={styles.itemDetailsContainer}>
@@ -98,15 +124,23 @@ const Cart = () => {
         </View>
 
         <View style={styles.quantityContainer}>
-          <TouchableOpacity style={styles.quantityButton}>
+          <TouchableOpacity
+            style={styles.quantityButton}
+            onPress={() => {
+              increaseCartProductQuantity(item.id);
+            }}
+          >
             <Text style={styles.quantityButtonText}>+</Text>
           </TouchableOpacity>
           <View style={styles.quantityBox}>
-            <Text style={styles.quantityText}>
-              {item.quantity}
-            </Text>
+            <Text style={styles.quantityText}>{item.quantity}</Text>
           </View>
-          <TouchableOpacity style={styles.quantityButton}>
+          <TouchableOpacity
+            style={styles.quantityButton}
+            onPress={() => {
+              decreaseCartProductQuantity(item.id);
+            }}
+          >
             <Text style={styles.quantityButtonText}>-</Text>
           </TouchableOpacity>
         </View>
@@ -114,11 +148,10 @@ const Cart = () => {
     );
   };
 
-  return loading ? (
-    <Text>Loading.............</Text>
-  ) : (
-    <View style={styles.container}>
-      {/* <View style={styles.headerContainer}>
+  return (
+    <>
+      <View style={styles.container}>
+        {/* <View style={styles.headerContainer}>
         <TouchableOpacity style={styles.header} onPress={() => console.log("Back button pressed")}>
           <Icon name="arrow-left" size={25} color="#000" />
           <Text style={styles.headingTitle}>Cart</Text>
@@ -134,35 +167,56 @@ const Cart = () => {
         </View>
       </View> */}
 
-      <Text style={styles.sectionTitle}>My Cart List</Text>
+        <Text style={styles.sectionTitle}>My Cart List</Text>
 
+        <FlatList
+          data={userData.cart}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          renderItem={renderCartItem}
+        />
 
-      <FlatList
-        data={cartlist}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
-        renderItem={renderCartItem}
+        <View style={styles.totalSection}>
+          <View style={styles.totalTextContainer}>
+            <Text style={styles.totalText}>Total</Text>
+            <Text style={styles.totalAmount}>
+              {"\u20B9"} {userData.cartTotal}
+            </Text>
+          </View>
 
-      />
-
-
-      <View style={styles.totalSection}>
-        <View style={styles.totalTextContainer}>
-          <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalAmount}>{"\u20B9"} {total}</Text>
-        </View>
-
-        <View style={styles.checkoutButtonContainer}>
-          <TouchableOpacity onPress={checkOut} style={styles.checkoutButton}>
-            <Text style={styles.checkoutButtonText}>Checkout</Text>
-          </TouchableOpacity>
+          <View style={styles.checkoutButtonContainer}>
+            <TouchableOpacity
+              onPress={()=>{
+                navigation.navigate('Checkout')
+              }}
+              style={
+                userData.cart.length == 0
+                  ? styles.disabledButton
+                  : styles.checkoutButton
+              }
+              disabled={userData.cart.length == 0 ? true : false}
+            >
+              <Text style={styles.checkoutButtonText}>Checkout</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+      {isloading ? <Loader /> : null}
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  activityIndicator: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   container: {
     paddingHorizontal: 10,
     paddingTop: 50,
@@ -240,7 +294,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
 
-    marginBottom: 10
+    marginBottom: 10,
+  },
+  disabledButton: {
+    height: "100%",
+    width: "30%",
+
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+
+    marginBottom: 10,
+
+    backgroundColor: "gray", // Change this to your desired disabled button color
   },
   checkoutButtonText: {
     color: "#fff",
@@ -256,9 +322,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flexWrap: "wrap",
     elevation: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
-    padding: 10
+    padding: 10,
   },
   imageContainer: {
     width: "30%",

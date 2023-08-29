@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,6 +15,9 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { StatusBar } from "expo-status-bar";
+import { AuthContext } from "../Context/AuthContext";
+import { BASE_URL } from "../Utility/config";
+import Loader from "./Loader";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -23,38 +26,153 @@ const Checkout = ({navigation}) => {
   const [isSelected, setSelection] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-
-  const [newAddress, setNewAddress] = useState("");
-  const [newLandmark, setNewLandmark] = useState("");
+  const [address, setAddress] = useState("");
+  const [landmark, setLandmark] = useState("");
   const [newMobile, setNewMobile] = useState("");
+  const [isLoading,setIsLoading] = useState(false);
 
-  const address = [
-    {
-      id: 1,
-      address: "Badi Talab",
-      landmark: "Zilani dukan",
-      mobile: 9576808817,
-    },
-    {
-      id: 2,
-      address: "Badi Talab",
-      landmark: "Zilani dukan",
-      mobile: 9576808817,
-    },
-  ];
+  const {
+    token,
+    userData,
+    showToastedError,
+    showToastedSuccess,
+    getUserData
+     
+  
+  }  = useContext(AuthContext);
 
-  const handleAddNewAddress = () => {
-    if (newAddress.length <= 0) {
-      console.warn("please enter address");
+ 
+  
+
+  const handleAddAddress = async() => {
+
+    try{
+
+       if (address.length <= 0)
+       {
+
+        showToastedError("please enter address")
+        return;
+         
+      }
+      else if(landmark.length<=0)
+      {
+        showToastedError("please enter landmark");
+        return;
+  
+      }
+
+      setIsLoading(true);
+  
+      await  fetch(`${BASE_URL}/user/addAddress`,{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body:JSON.stringify({
+          address:address,
+          landmark:landmark,
+          newMobile:newMobile
+        })
+      }).then((response)=>{
+        
+         console.log(response.json());
+        if(response.status===200)
+        {
+          setModalVisible(false)
+          console.log(response.status);
+           setIsLoading(false);
+           showToastedSuccess("address added");
+           getUserData();
+        }else if(response.status===400)
+        {
+            console.log(response.status)
+            console.log(response.json().message)
+            setIsLoading(false);
+            showToastedError(response.json().message);
+        }
+        else if(response.status==500)
+        {
+          console.log(response.status)
+          console.log(response.json().message)
+            setIsLoading(false);
+            showToastedError(response.json().message);
+
+        }else { 
+
+          console.log(response.status)
+          setIsLoading(false);
+          showToastedError("Something went wrong");
+
+
+        }
+
+      })
+      
+
+    }catch(error)
+    {
+
+      setIsLoading(false);
+      console.log("Error inside handleAddAddress ",error);
+
     }
-
-    console.warn("added");
-    setModalVisible(false);
   };
 
-  const placeOrderHandler = () => {
+
+
+  const placeOrderHandler = async() => {
   // console.warn("Order Placed");
-    navigation.navigate("orderConfirmScreen")
+  try{
+
+    setIsLoading(true);
+
+    if(selectedAddressId==null)
+    {
+      showToastedError("Please select Address");
+      return;
+    }
+
+    await fetch(`${BASE_URL}/order/placeOrder/${selectedAddressId}`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": `Bearer ${token}`
+
+      }
+    }).then((response)=>{
+      if(response.status===200)
+      {
+        setIsLoading(false);
+        
+        navigation.navigate("OrderConfirmPage");
+        getUserData();
+
+
+      }else if(response.status==400)
+      {
+        setIsLoading(false);
+        showToastedError("")
+
+      }else if(response.status===500)
+      {
+
+        setIsLoading(false);
+        showToastedError("Server error");
+      }else {
+        setIsLoading(false);
+        showToastedError("something went wrong please try again")
+
+      }
+    })
+
+  }catch(error)
+  {
+    setIsLoading(false);
+    console.log("Error inside placeOrderHandler",error);
+  }
+    
   };
 
   const renderAddress = ({ item }) => {
@@ -70,18 +188,17 @@ const Checkout = ({navigation}) => {
           setSelectedAddressId(item.id);
         }}
       >
-        <Text style={styles.addressTitle}>
-          Address {item.id}
-          {isSelected ? " (Selected)" : ""}
-        </Text>
+      
         <Text>{item.address}</Text>
         <Text>{item.landmark}</Text>
-        <Text style={{ marginVertical: 5 }}>{item.mobile}</Text>
+        <Text>{item.newMobile}</Text>
+        <Text >{item.mobile}</Text>
       </TouchableOpacity>
     );
   };
 
-  return (
+   return (
+   <>
     <SafeAreaView style={styles.container}>
 
      <Modal
@@ -106,14 +223,14 @@ const Checkout = ({navigation}) => {
             <TextInput
               style={styles.modalInput}
               placeholder="Enter address"
-              value={newAddress}
-              onChangeText={(text) => setNewAddress(text)}
+              value={address}
+              onChangeText={(text) => setAddress(text)}
             />
             <TextInput
               style={styles.modalInput}
               placeholder="Enter landmark"
-              value={newLandmark}
-              onChangeText={(text) => setNewLandmark(text)}
+              value={landmark}
+              onChangeText={(text) => setLandmark(text)}
             />
             <TextInput
               style={styles.modalInput}
@@ -124,10 +241,10 @@ const Checkout = ({navigation}) => {
             <Pressable
               style={[
                 styles.addAddressButton,
-                (!newAddress || !newLandmark) && styles.disabledButton,
+                (!address || !landmark) && styles.disabledButton,
               ]}
-              disabled={!newAddress || !newLandmark}
-              onPress={handleAddNewAddress}
+              disabled={!address || !landmark}
+              onPress={handleAddAddress}
             >
               <Text style={styles.textStyle}>Add</Text>
             </Pressable>
@@ -161,9 +278,9 @@ const Checkout = ({navigation}) => {
         </View>
 
         <FlatList
-          data={address}
+          data={userData.address}
           showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item.id.toString()} // Convert to string
+          keyExtractor={(item) => item.id} // Convert to string
           renderItem={renderAddress}
         />
       </View>
@@ -174,7 +291,7 @@ const Checkout = ({navigation}) => {
 
         <View style={styles.paymentStyle}>
           <Text style={styles.cashondelivery}>Cash on Delivery</Text>
-          <Text style={styles.cashondeliveryprice}>{"\u20B9"} 44.39</Text>
+          <Text style={styles.cashondeliveryprice}>{"\u20B9"} {userData.cartTotal}</Text>
         </View>
 
         <View style={styles.paymentStyle}>
@@ -186,7 +303,7 @@ const Checkout = ({navigation}) => {
       <View style={styles.totalSection}>
         <View>
           <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalAmount}>{"\u20B9"} 44.39</Text>
+          <Text style={styles.totalAmount}>{"\u20B9"} {userData.cartTotal}</Text>
         </View>
 
         <TouchableOpacity
@@ -198,6 +315,8 @@ const Checkout = ({navigation}) => {
       </View>
     
     </SafeAreaView>
+        {isLoading?<Loader/>:null}
+    </>
   );
 };
 

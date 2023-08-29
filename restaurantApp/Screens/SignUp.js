@@ -20,7 +20,6 @@ import { AuthContext } from "../Context/AuthContext";
 const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -33,49 +32,72 @@ const SignUp = ({ navigation }) => {
   };
 
   const HandleSignup = async () => {
+    setIsLoading(true);
     const isConnected = handleConnection();
 
     if (isConnected === false) {
+      setIsLoading(false);
       showToastedError("No internet connection");
       return;
     }
 
-    setLoading(true);
+   
     if (!email || !password || !name || !mobile) {
       setIsLoading(false);
-      showToastedError("Please enter all values");
+      showToastedError("Please enter all Fields");
     } else if (!isValidEmail(email)) {
       setIsLoading(false);
       showToastedError("Please enter a valid email address.");
     } else if (password.length < 4) {
       setIsLoading(false);
       showToastedError("Password must be at least 4 characters long.");
-    }else{
+    }else if(mobile.length!=10)
+    {
+      setIsLoading(false);
+      showToastedError("Please Enter correct number");
+    }
+    
+    else{
+
+      try{
+        
       const response = await signUp(email, password, name, mobile);
       if(response.status===200)
       {
         response.json()
         .then((data)=>{
           const message = data.message;
-          setLoading(false);
+          setIsLoading(false);
           showToastedSuccess(message);
         })
-        .catch((err) => {
-          setLoading(false);
+        // .catch((err) => {
+        //   setIsLoading(false);
           
-          showToastedSuccess("Something went wrong on the server.");
+        //   showToastedSuccess("Something went wrong on the server.");
           
-        })
+        // })
       }
       else if (response.status === 500) {
         setIsLoading(false);
         showToastedError("Something went wrong on the server.");
-      }else {
+      }else if(response.status === 400)
+      {
+        setIsLoading(false);
+        showToastedError("User Already Exist");
+      }
+      else {
         
         setIsLoading(false);
         showToastedError("Network issue");
       }
 
+    
+
+      }catch(error)
+      {
+          setIsLoading(false);
+          showToastedError("Network issue")
+      }
     }
 
    

@@ -31,6 +31,8 @@ const Login = ({ navigation }) => {
     showToastedSuccess,
     showToastedError,
     handleConnection,
+     
+    
   } = useContext(AuthContext);
 
   const isValidEmail = (email) => {
@@ -73,6 +75,7 @@ const Login = ({ navigation }) => {
                 setToken(token);
                 AsyncStorage.setItem("token", token);
                 showToastedSuccess("Login Success");
+                 
               }
               setIsLoading(false);
             })
@@ -164,11 +167,11 @@ const Login = ({ navigation }) => {
         </View>
       </KeyboardAvoidingView>
 
-      <Modal visible={loading} transparent={true} animationType="fade">
+      {/* <Modal visible={loading} transparent={true} animationType="fade">
         <View style={styles.modalContainer}>
           <ActivityIndicator size="large" color="blue" />
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 };

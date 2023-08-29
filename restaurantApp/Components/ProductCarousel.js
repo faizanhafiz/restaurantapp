@@ -6,17 +6,22 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  ActivityIndicator
 } from "react-native";
 
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Context/AuthContext";
+import { BASE_URL } from "../Utility/config";
+ 
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 const ProductCarousel = (props) => {
-  const { product, handleConnection,showToastedError } =
+  const { product, handleConnection,showToastedError ,showToastedSuccess,token,getCart } =
     useContext(AuthContext);
+
+  
 
   useEffect(() => {
      
@@ -24,8 +29,54 @@ const ProductCarousel = (props) => {
 
   
 
+  
+  const addToCart = async (productId) => {
+    
+    
+    props.setisLoading(true);
+
+    await fetch(`${BASE_URL}/user/addToCart/${productId}`, {
+      method:"POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    })
+    .then(async (response) => {
+        if (response.status === 200) {
+          console.log("add to cart success===============>");
+          props.setisLoading(false);
+          showToastedSuccess("Product added");
+          getCart();
+          
+        } else if (response.status === 400) {
+          props.setisLoading(false);
+            const errorResponse = await response.json(); // Parse the response body as JSON
+            const errorMessage = errorResponse.message || "Bad request"; // Use default message if no message in response
+            showToastedError(errorMessage);
+             
+        } else if (response.status === 404) {
+          props.setisLoading(false);
+            showToastedError("Product not found");
+            
+        } else if (response.status >= 500) {
+          props.setisLoading(false);
+            showToastedError("Server error");
+            console.log("Error in add to cart - Server error");
+        }
+    })
+    .catch((err) => {
+      props.setisLoading(false);
+        showToastedError("Something went wrong");
+        console.log("Error in add to cart", err);
+    })
+     
+};
+
+
   const renderItem = ({ item }) => {
     return (
+      
       <View style={styles.items}>
         {/* <Text style={styles.itemText}>{item.title}</Text> */}
         <View style={{ width: "50%", height: "100%" }}>
@@ -85,6 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%", // This ensures the container takes 100% width of its parent
   },
+  
   addButton: {
     backgroundColor: "orange",
     paddingVertical: 10,

@@ -10,14 +10,57 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(null);
-  const [product,setProduct] = useState([]);
+  const [product,setProducts] = useState([]);
   const [cart, setCart] = useState([]);
 
-  // Toast.setConfig({
-  //   position: 'top',
-  //   topOffset: 50,
-  //   visibilityTime: 2500,
-  // });
+  const [userData ,setUserData]  = useState([]);
+
+  
+
+  const getCart=async ()=>{
+
+    try{
+
+        await fetch(`${BASE_URL}/user/getUser`,{
+          method:"GET",
+          headers:{
+            "Content-Type": "application/json",
+          "Authorization":`Bearer ${token}`
+          }
+        })
+        .then((response)=>{
+           
+          if(response.status===200)
+          {
+             
+            return response.json();
+          }
+        }).then((data)=>{
+           
+          
+          setUserData(data);
+        }).catch((err) => {
+          if(err.response){
+            if(err.response.status=404)
+            {
+  
+              console.log("cart not found");
+            }else if(err.response.status=400){
+
+              console.log("User  not found");            }
+            else if(err.response.status=500)
+            {
+              showToastedError("something went  wrong in server")
+            }else{
+              showToastedError("Network issue");
+            }
+          }
+        });
+    }catch(err)
+    {
+      console.log(err);    }
+
+  }
 
   const handleConnection = async () => {
     const netInfoState = await NetInfo.fetch();
@@ -27,13 +70,59 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  //GetAllProduct
+   
+  const getUserData = async()=>{
+    try
+    {
 
-  
+      
+
+     await  fetch(`${BASE_URL}/user/getUser`,{
+        method:"GET",
+        headers:{
+          "Content-Type": "application/json",
+          "Authorization":`Bearer ${token}`
+        }
+      }).then((response)=>{
+         
+        if(response.status===200)
+        {
+         return  response.json();
+        }
+      }).then(data=>{
+        
+        setUserData(data);
+         
+        
+
+      })
+      .catch((err) => {
+        if(err.response){
+          if(err.response.status=404)
+          {
+
+            showToastedError("User not found");
+          }else if(err.response.status=400){
+            showToastedError("token must not be null");
+          }
+          else if(err.response.status=500)
+          {
+            showToastedError("something went  wrong in server")
+          }else{
+            showToastedError("Network issue");
+          }
+        }
+      });
+    }catch(err){
+      console.log(err);
+    } 
+  }
+
 
   const getProducts = async () => {
    try{
-    
+     console.log("product url ==>",`${BASE_URL}/product/products`);
+
     const isConnected = handleConnection();
     if (isConnected == false) {
       showToastedError("No internet connection");
@@ -41,14 +130,15 @@ export const AuthProvider = ({ children }) => {
     }
     await fetch(`${BASE_URL}/product/products`)
       .then((response) => {
-        if (response.status == 200) {
+        if (response.status === 200) {
+         
           return response.json();
         }
       }).then((data)=>{
         
          
-           
-         setProduct(data);
+         
+         setProducts(data);
         
      
       })
@@ -123,10 +213,7 @@ export const AuthProvider = ({ children }) => {
       text1: message,
       autoHide: true,
       position: "top", // Display at the top
-      style: {
-        left: "50%", // Centered horizontally
-        transform: [{ translateX: "-50%" }], // Adjust for centering
-      },
+      visibilityTime:2500
     });
   };
 
@@ -136,6 +223,7 @@ export const AuthProvider = ({ children }) => {
       text1: message,
       autoHide: true,
       position: "top", // Display at the top
+      visibilityTime:2500
     });
   };
 
@@ -144,10 +232,7 @@ export const AuthProvider = ({ children }) => {
   };
 
 
-  const setTokenFun= async(token)=>{
-
-    setToken(token)
-  }
+ 
 
   const isLoggedIn = async () => {
     try {
@@ -160,6 +245,7 @@ export const AuthProvider = ({ children }) => {
       if (token != null) {
        
           setToken(token);
+           
                   
       }
     } catch (e) {
@@ -167,13 +253,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+   
   useEffect(() => {
-     AsyncStorage.removeItem('token');
+      //  AsyncStorage.removeItem('token');
     isLoggedIn();
     getProducts();
+    
+    
      
     
   }, []);
+
+  
+
+  
+
+  
+
+
+   
 
   return (
     <AuthContext.Provider
@@ -186,9 +285,14 @@ export const AuthProvider = ({ children }) => {
         showToastedError,
         showToastedSuccess,
         product,
-        setProduct,
+        setProducts,
         handleConnection,
-        signUp
+        signUp,
+        cart,
+        userData,
+        getUserData,
+        getCart,
+        setCart
         
       }}
     >
