@@ -69,13 +69,9 @@ const SignUp = ({ navigation }) => {
           const message = data.message;
           setIsLoading(false);
           showToastedSuccess(message);
+          navigation.navigate('verificationScreen')
+
         })
-        // .catch((err) => {
-        //   setIsLoading(false);
-          
-        //   showToastedSuccess("Something went wrong on the server.");
-          
-        // })
       }
       else if (response.status === 500) {
         setIsLoading(false);
@@ -84,6 +80,7 @@ const SignUp = ({ navigation }) => {
       {
         setIsLoading(false);
         showToastedError("User Already Exist");
+        navigation.navigate('loginScreen')
       }
       else {
         

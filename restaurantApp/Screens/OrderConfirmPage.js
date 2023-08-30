@@ -27,7 +27,7 @@ const OrderConfirmPage = () => {
       </View>
       
       {isTextDisplay ? (
-        <Text style={styles.text}>Your order Confirmed</Text>
+        <Text style={styles.text}>Your Order Placed</Text>
       ) : (
         <Text style={styles.text}>{" "}</Text> // Display an empty space text
       )}

@@ -18,6 +18,7 @@ import AppwriterService from "../Service/AppwriterService";
 import { AuthContext } from "../Context/AuthContext";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Loader from "./Loader";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -63,7 +64,7 @@ const Login = ({ navigation }) => {
     } else {
       try {
         const response = await login(email, password);
-  
+        
         if (response.status === 200) {
           response
             .json()
@@ -83,13 +84,24 @@ const Login = ({ navigation }) => {
               setIsLoading(false);
               showToastedSuccess("Something went wrong on the server.");
             });
-        } else if (response.status === 400) {
+        } 
+        else if(response.status===401)
+        {
           setIsLoading(false);
-          showToastedError("Please enter correct email and password");
-        } else if (response.status === 500) {
+          showToastedError("verify you account");
+          navigation.navigate("verificationScreen");
+        }
+        
+        else if (response.status === 500) {
           setIsLoading(false);
           showToastedError("Something went wrong on the server.");
-        } else {
+        }else if(response.status===404)
+        {
+          setIsLoading(false);
+          showToastedError("user not found");
+
+        }
+         else {
         
           setIsLoading(false);
           showToastedError("Network issue");
@@ -103,9 +115,8 @@ const Login = ({ navigation }) => {
   
   
 
-  return isLoading ? (
-    <ActivityIndicator  size='large' color='blue' animating={isLoading} style={styles.activityIndicator} />
-  ) : (
+  return (
+    <>
     <View style={styles.container}>
       <KeyboardAvoidingView
         style={styles.keyboardContainer}
@@ -141,23 +152,7 @@ const Login = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* <Text style={styles.orText}>- Or sign in with -</Text> */}
-
-        {/* <View style={styles.socialButtonsContainer}>
-        <TouchableOpacity style={styles.socialButton}>
-          <Image
-            source={require("../assets/googlelogo.png")}
-            style={styles.socialImage}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.socialButton}>
-          <Image
-            source={require("../assets/facebooklogo.png")}
-            style={styles.socialImage}
-          />
-        </TouchableOpacity>
-      </View> */}
+ 
 
         <View style={styles.signupContainer}>
           <Text style={styles.signupText}>Don't have an account? </Text>
@@ -167,12 +162,11 @@ const Login = ({ navigation }) => {
         </View>
       </KeyboardAvoidingView>
 
-      {/* <Modal visible={loading} transparent={true} animationType="fade">
-        <View style={styles.modalContainer}>
-          <ActivityIndicator size="large" color="blue" />
-        </View>
-      </Modal> */}
     </View>
+
+
+    {isLoading?<Loader/>:null}
+    </>
   );
 };
 

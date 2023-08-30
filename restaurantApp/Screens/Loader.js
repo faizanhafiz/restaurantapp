@@ -6,6 +6,7 @@ const Loader = () => {
   return (
     <View style={[StyleSheet.absoluteFillObject, styles.container]}>
       <LottieView
+        style={{ width: 200, height: 200 }}
         source={require("../assets/loadinganim.json")}
          
         loop

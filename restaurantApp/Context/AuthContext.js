@@ -256,7 +256,7 @@ export const AuthProvider = ({ children }) => {
 
    
   useEffect(() => {
-      //  AsyncStorage.removeItem('token');
+       AsyncStorage.removeItem('token');
     isLoggedIn();
     getProducts();
     

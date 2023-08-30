@@ -1,9 +1,8 @@
-import { View, Text ,Dimensions} from "react-native";
+import { View, Text, Dimensions } from "react-native";
 import React from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 const CustomeButton = ({ text, onPress }) => {
- 
   return (
     <TouchableOpacity style={styles.touchableButton} onPress={onPress}>
       <Text style={styles.buttonText}>{text}</Text>
@@ -17,14 +16,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12, // Vertical padding
     paddingHorizontal: 24, // Horizontal padding
     borderRadius: 8, // Border radius
-    width: width*.8,
+    width: width * 0.8,
     marginVertical: 20,
     inputContainerFocus: {
-    borderColor: 'blue', // Customize the focused border color
-  },
-  inputContainerFocus: {
-                  borderColor: 'blue', // Customize the focused border color
-                },
+      borderColor: "blue", // Customize the focused border color
+    },
+   
   },
   buttonText: {
     color: "#fff", // Text color
