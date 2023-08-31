@@ -70,12 +70,12 @@ const Login = ({ navigation }) => {
             .json()
             .then((data) => {
               const token = data.token;
-              console.log("Token", token);
+            
   
               if (token != null) {
                 setToken(token);
                 AsyncStorage.setItem("token", token);
-                showToastedSuccess("Login Success");
+                
                  
               }
               setIsLoading(false);

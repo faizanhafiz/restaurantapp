@@ -23,7 +23,7 @@ const Checkout = ({ navigation }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { token, userData, showToastedError, showToastedSuccess, getUserData } =
+  const { token, userData, showToastedError,getOrder, showToastedSuccess, getUserData } =
     useContext(AuthContext);
 
   const placeOrderHandler = async () => {
@@ -49,6 +49,8 @@ const Checkout = ({ navigation }) => {
         if (response.status === 200) {
           setIsLoading(false);
           getUserData();
+          getOrder();
+          navigation.navigate("OrderConfirmPage");
          
         } else if (response.status == 400) {
           setIsLoading(false);
@@ -64,9 +66,7 @@ const Checkout = ({ navigation }) => {
     } catch (error) {
       setIsLoading(false);
       console.log("Error inside placeOrderHandler", error);
-    }finally{
-      navigation.navigate("OrderConfirmPage");
-    }
+    } 
   };
 
   const renderAddress = ({ item }) => {

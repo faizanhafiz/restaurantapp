@@ -7,7 +7,7 @@ import {StyleSheet,ActivityIndicator} from 'react-native'
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+  export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(null);
   const [product,setProducts] = useState([]);
@@ -15,7 +15,63 @@ export const AuthProvider = ({ children }) => {
 
   const [userData ,setUserData]  = useState([]);
 
+  const [order ,setOrder] = useState([]);
+
   
+  
+
+   const getOrder = async()=>{
+      setIsLoading(true)
+
+   try{
+     
+     await fetch(`${BASE_URL}/order/getOrder`,{
+      method:"GET",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization" :`Bearer ${token}`
+
+      }
+    }).then(async(response)=>{ 
+      if(response.status===200)
+      {
+         const order = await response.json();
+          setOrder(order);
+
+         
+      
+      }else if(response.status==400)
+      {
+        setIsLoading(false)
+        showToastedError("order notfound")
+        
+      }else if(response.status===500)
+      {
+        setIsLoading(false)
+        showToastedError('something went wrong')
+  
+      }else {
+        setIsLoading(false);
+        showToastedError('network error')
+  
+      }
+     
+    }).catch(err=>{
+      setIsLoading(false);
+        console.log(err);
+    });
+
+    
+
+   
+
+
+   }catch{
+        setIsLoading(false);
+        showToastedError("network error")
+   }
+
+  }
 
   const getCart=async ()=>{
 
@@ -121,7 +177,7 @@ export const AuthProvider = ({ children }) => {
 
   const getProducts = async () => {
    try{
-     console.log("product url ==>",`${BASE_URL}/product/products`);
+   
 
     const isConnected = handleConnection();
     if (isConnected == false) {
@@ -239,8 +295,7 @@ export const AuthProvider = ({ children }) => {
      
      
       let token = await AsyncStorage.getItem("token");
-
-      console.log("token  in AuthContext isLoggedIn", token);
+ 
 
       if (token != null) {
        
@@ -256,7 +311,7 @@ export const AuthProvider = ({ children }) => {
 
    
   useEffect(() => {
-       AsyncStorage.removeItem('token');
+        // AsyncStorage.removeItem('token');
     isLoggedIn();
     getProducts();
     
@@ -292,7 +347,9 @@ export const AuthProvider = ({ children }) => {
         userData,
         getUserData,
         getCart,
-        setCart
+        setCart,
+        getOrder,
+        order
         
       }}
     >

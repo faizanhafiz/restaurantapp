@@ -38,7 +38,7 @@ const ProductScreen = () => {
   }, []);
 
   useEffect(()=>{
-    console.log("user ==",userData)
+    
     if (userData && userData.userName) {
       const name = userData.userName;
       const firstName = name.split(' ')[0];

@@ -16,6 +16,7 @@ import { EmailVerification } from "../Service/EmailVerification";
 
 import CustomeButton from "../Components/CustomeButton";
 import { AuthContext } from "../Context/AuthContext";
+import Loader from "./Loader";
 
 const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState();
@@ -101,9 +102,7 @@ const SignUp = ({ navigation }) => {
   };
 
   return (
-    isLoading ? (
-      <ActivityIndicator  size='large' color='blue' animating={isLoading} style={styles.activityIndicator} />
-    ) :
+   <>
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={[styles.container, { marginTop: "25%" }]}
@@ -148,6 +147,8 @@ const SignUp = ({ navigation }) => {
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
+    {isLoading?<Loader/>:null}
+    </>
   );
 };
 

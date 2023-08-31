@@ -26,9 +26,10 @@ export const AppBottomStackNavigator = () => {
       initialRouteName={productName}
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: "tomato",
+        // tabBarStyle:{backgroundColor:'blue'},
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-
+          
           const routeName = route.name;
 
           if (routeName === productName) {

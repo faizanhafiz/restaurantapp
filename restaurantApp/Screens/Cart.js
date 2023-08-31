@@ -6,13 +6,15 @@ import {
   TouchableOpacity,
   View,
   FlatList,
-  ActivityIndicator,
+  StatusBar,
+ 
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BASE_URL } from "../Utility/config";
 import { AuthContext } from "../Context/AuthContext";
 import Loader from "./Loader";
+ 
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -33,36 +35,36 @@ const Cart = ({ navigation }) => {
     showToastedSuccess,
   } = useContext(AuthContext);
 
-  const checkOut = async () => {
-    try {
-      setIsloading(true);
-      await fetch(`${BASE_URL}/order/placeOrder`, {
-        method: "POST",
-        headers:{
-          "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-        }
-      }).then((response) => {
-        if (response.status === 200) {
-          setIsloading(false);
-          showToastedSuccess("order placed");
-        } else if (response.status === 400) {
-          setIsloading(false);
-          console.log("bad request");
-        } else if (response.status === 500) {
-          setIsloading(false);
-          showToastedError("server error");
-          console.log("server error");
-        }else{
-          setIsloading(false);
-          console.log("seomething went wrong",response.status);
-        }
-      });
-    } catch (err) {
-      setIsloading(false);
-      console.log("error inside checkout", err);
-    }
-  };
+  // const checkOut = async () => {
+  //   try {
+  //     setIsloading(true);
+  //     await fetch(`${BASE_URL}/order/placeOrder`, {
+  //       method: "POST",
+  //       headers:{
+  //         "Content-Type": "application/json",
+  //       "Authorization": `Bearer ${token}`,
+  //       }
+  //     }).then((response) => {
+  //       if (response.status === 200) {
+  //         setIsloading(false);
+  //         showToastedSuccess("order placed");
+  //       } else if (response.status === 400) {
+  //         setIsloading(false);
+  //         console.log("bad request");
+  //       } else if (response.status === 500) {
+  //         setIsloading(false);
+  //         showToastedError("server error");
+  //         console.log("server error");
+  //       }else{
+  //         setIsloading(false);
+  //         console.log("seomething went wrong",response.status);
+  //       }
+  //     });
+  //   } catch (err) {
+  //     setIsloading(false);
+  //     console.log("error inside checkout", err);
+  //   }
+  // };
 
   useEffect(() => {
     // const fetchData = async () => {
@@ -151,55 +153,67 @@ const Cart = ({ navigation }) => {
   return (
     <>
       <View style={styles.container}>
-        {/* <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.header} onPress={() => console.log("Back button pressed")}>
-          <Icon name="arrow-left" size={25} color="#000" />
-          <Text style={styles.headingTitle}>Cart</Text>
-        </TouchableOpacity>
+        {userData.cart.length == 0 ? (
+          <View style={styles.emptycart}>
+            <Image source={require("../assets/emptycart.jpg")} />
+            <Text style={{ fontWeight: 600, fontSize: 16 }}>Oops..</Text>
+            <Text style={{ fontSize: 14, fontWeight: 400 }}>
+              Your cart is empty
+            </Text>
 
-        <View style={styles.profileImage}>
-          <Image
-            source={{
-              uri: "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
-            }}
-            style={styles.profileImage}
-          />
-        </View>
-      </View> */}
-
-        <Text style={styles.sectionTitle}>My Cart List</Text>
-
-        <FlatList
-          data={userData.cart}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item.id}
-          renderItem={renderCartItem}
-        />
-
-        <View style={styles.totalSection}>
-          <View style={styles.totalTextContainer}>
-            <Text style={styles.totalText}>Total</Text>
-            <Text style={styles.totalAmount}>
-              {"\u20B9"} {userData.cartTotal}
+            <Text style={{ marginTop: 10, fontSize: 14, fontWeight: 400 }}>
+              Add foods you like
             </Text>
           </View>
+        ) : (
+          <View style={styles.container}>
+            <FlatList
+              data={userData.cart}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item) => item.id}
+              renderItem={renderCartItem}
+              ListHeaderComponent={() => (
+                <Text
+                  style={{
+                    paddingLeft: 10,
+                    fontSize: 24,
+                    fontWeight: "bold",
+                    backgroundColor: "#fff",
+                    flex: 2,
+                    height:40
+                  }}
+                >
+                  Your Cart
+                </Text>
+              )}
+            />
 
-          <View style={styles.checkoutButtonContainer}>
-            <TouchableOpacity
-              onPress={()=>{
-                navigation.navigate('Checkout')
-              }}
-              style={
-                userData.cart.length == 0
-                  ? styles.disabledButton
-                  : styles.checkoutButton
-              }
-              disabled={userData.cart.length == 0 ? true : false}
-            >
-              <Text style={styles.checkoutButtonText}>Checkout</Text>
-            </TouchableOpacity>
+            <View style={styles.totalSection}>
+              <View style={styles.totalTextContainer}>
+                <Text style={styles.totalText}>Total</Text>
+                <Text style={styles.totalAmount}>
+                  {"\u20B9"} {userData.cartTotal}
+                </Text>
+              </View>
+
+              <View style={styles.checkoutButtonContainer}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("Checkout");
+                  }}
+                  style={
+                    userData.cart.length == 0
+                      ? styles.disabledButton
+                      : styles.checkoutButton
+                  }
+                  disabled={userData.cart.length == 0 ? true : false}
+                >
+                  <Text style={styles.checkoutButtonText}>Checkout</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-        </View>
+        )}
       </View>
       {isloading ? <Loader /> : null}
     </>
@@ -218,15 +232,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    paddingHorizontal: 10,
-    paddingTop: 50,
+    
+    paddingTop: 10,
     flex: 1,
-    backgroundColor: "#fff9",
+    backgroundColor: '#fff5',
   },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  emptycart: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
   },
   header: {
     flexDirection: "row",
@@ -316,15 +335,15 @@ const styles = StyleSheet.create({
   cartItemContainer: {
     width: windowWidth * 0.9,
     height: 120,
-    marginHorizontal: 10,
-    marginVertical: 5,
+    marginVertical: 2,
     flexDirection: "row",
     justifyContent: "space-between",
     flexWrap: "wrap",
-    elevation: 10,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 10,
+    
+    backgroundColor: "#ffff",
+    
+     
+    
   },
   imageContainer: {
     width: "30%",
