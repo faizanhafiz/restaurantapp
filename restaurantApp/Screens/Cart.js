@@ -180,7 +180,6 @@ const Cart = ({ navigation }) => {
                     fontWeight: "bold",
                     backgroundColor: "#fff",
                     flex: 2,
-                    height:40
                   }}
                 >
                   Your Cart
@@ -232,8 +231,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    
-    paddingTop: 10,
+    paddingHorizontal: 5,
+    paddingTop: 20,
     flex: 1,
     backgroundColor: '#fff5',
   },
@@ -335,15 +334,15 @@ const styles = StyleSheet.create({
   cartItemContainer: {
     width: windowWidth * 0.9,
     height: 120,
-    marginVertical: 2,
+    marginVertical: 5,
     flexDirection: "row",
     justifyContent: "space-between",
     flexWrap: "wrap",
     
-    backgroundColor: "#ffff",
+    backgroundColor: "#fff",
     
-     
-    
+    padding: 10,
+    marginTop:2
   },
   imageContainer: {
     width: "30%",
