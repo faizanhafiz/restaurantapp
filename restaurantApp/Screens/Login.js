@@ -14,7 +14,6 @@ import {
 import { useContext } from "react";
 import CustomeInput from "../Components/CustomeInput";
 import CustomeButton from "../Components/CustomeButton";
-import AppwriterService from "../Service/AppwriterService";
 import { AuthContext } from "../Context/AuthContext";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";

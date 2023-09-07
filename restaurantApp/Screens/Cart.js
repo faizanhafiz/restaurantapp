@@ -7,14 +7,12 @@ import {
   View,
   FlatList,
   StatusBar,
- 
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BASE_URL } from "../Utility/config";
 import { AuthContext } from "../Context/AuthContext";
 import Loader from "./Loader";
- 
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -152,7 +150,13 @@ const Cart = ({ navigation }) => {
 
   return (
     <>
-      <View style={styles.container}>
+      <View
+        style={
+          userData.cart == 0
+            ? { paddingTop: 10, flex: 1, backgroundColor: "#ffff" }
+            : styles.container
+        }
+      >
         {userData.cart.length == 0 ? (
           <View style={styles.emptycart}>
             <Image source={require("../assets/emptycart.jpg")} />
@@ -167,25 +171,36 @@ const Cart = ({ navigation }) => {
           </View>
         ) : (
           <View style={styles.container}>
-            <FlatList
-              data={userData.cart}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item) => item.id}
-              renderItem={renderCartItem}
-              ListHeaderComponent={() => (
-                <Text
-                  style={{
-                    paddingLeft: 10,
-                    fontSize: 24,
-                    fontWeight: "bold",
-                    backgroundColor: "#fff",
-                    flex: 2,
-                  }}
-                >
-                  Your Cart
-                </Text>
-              )}
-            />
+            <View
+              style={[
+                styles.container,
+                {
+                  justifyContent: "center",
+                  alignItems: "center",
+                },
+              ]}
+            >
+              <FlatList
+                data={userData.cart}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={(item) => item.id}
+                renderItem={renderCartItem}
+                ListHeaderComponent={() => (
+                  <Text
+                    style={{
+                      paddingLeft: 10,
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      backgroundColor: "#fff",
+                      height: 40,
+                      width: windowWidth * 0.9,
+                    }}
+                  >
+                    Your Cart
+                  </Text>
+                )}
+              />
+            </View>
 
             <View style={styles.totalSection}>
               <View style={styles.totalTextContainer}>
@@ -231,10 +246,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    paddingHorizontal: 5,
-    paddingTop: 20,
+    paddingTop: 10,
     flex: 1,
-    backgroundColor: '#fff5',
+    backgroundColor: "#fff5",
   },
   headerContainer: {
     flexDirection: "row",
@@ -283,7 +297,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     paddingTop: 10,
-    paddingHorizontal: 5,
+    paddingHorizontal: 10,
   },
   totalTextContainer: {
     flexDirection: "row",
@@ -306,7 +320,7 @@ const styles = StyleSheet.create({
   },
   checkoutButton: {
     height: "100%",
-    width: "30%",
+    width: "90%",
     backgroundColor: "#FF6200",
     borderRadius: 10,
     alignItems: "center",
@@ -316,7 +330,7 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     height: "100%",
-    width: "30%",
+    width: "80%",
 
     borderRadius: 10,
     alignItems: "center",
@@ -334,15 +348,14 @@ const styles = StyleSheet.create({
   cartItemContainer: {
     width: windowWidth * 0.9,
     height: 120,
-    marginVertical: 5,
+
     flexDirection: "row",
     justifyContent: "space-between",
     flexWrap: "wrap",
-    
+    paddingHorizontal: 5,
     backgroundColor: "#fff",
-    
-    padding: 10,
-    marginTop:2
+
+    marginTop: 4,
   },
   imageContainer: {
     width: "30%",

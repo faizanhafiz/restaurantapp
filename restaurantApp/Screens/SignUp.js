@@ -11,9 +11,7 @@ import {
 } from "react-native";
 import React, { useContext, useState } from "react";
 import CustomeInput from "../Components/CustomeInput";
-import AppwriterService from "../Service/AppwriterService";
-import { EmailVerification } from "../Service/EmailVerification";
-
+ 
 import CustomeButton from "../Components/CustomeButton";
 import { AuthContext } from "../Context/AuthContext";
 import Loader from "./Loader";

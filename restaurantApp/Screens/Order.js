@@ -67,9 +67,9 @@ const Order = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={order.length == 0? styles.emptyContainer :styles.container}>
       {order.length == 0 ? (
-        <View style={styles.footerContainer}>
+        <View style= {styles.footerContainer}>
           <View style={{justifyContent:'center',alignItems:'center'}}>
             <Image
               source={require("../assets/emptyorder.jpg")}
@@ -114,6 +114,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: windowWidth,
     backgroundColor:'#fff5'
+  },
+  emptyContainer:{
+    height: windowHeight,
+    paddingTop: StatusBar.currentHeight,
+    justifyContent: "center",
+    alignItems: "center",
+    width: windowWidth,
+    backgroundColor:'#ffff'
   },
   scrollView: {
     marginHorizontal: 20,

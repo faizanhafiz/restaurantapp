@@ -50,20 +50,25 @@ const Checkout = ({ navigation }) => {
           setIsLoading(false);
           getUserData();
           getOrder();
+          console.log("order booked");
           navigation.navigate("OrderConfirmPage");
          
         } else if (response.status == 400) {
+          console.log("400")
           setIsLoading(false);
           showToastedError("");
         } else if (response.status === 500) {
+          console.log("500")
           setIsLoading(false);
           showToastedError("Server error");
         } else {
+          console.log("else")
           setIsLoading(false);
           showToastedError("something went wrong please try again");
         }
       });
     } catch (error) {
+       
       setIsLoading(false);
       console.log("Error inside placeOrderHandler", error);
     } 

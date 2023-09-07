@@ -269,7 +269,7 @@ export const AuthContext = createContext();
       text1: message,
       autoHide: true,
       position: "top", // Display at the top
-      visibilityTime:2500
+      visibilityTime:1500
     });
   };
 
@@ -279,7 +279,7 @@ export const AuthContext = createContext();
       text1: message,
       autoHide: true,
       position: "top", // Display at the top
-      visibilityTime:2500
+      visibilityTime:1500
     });
   };
 
@@ -311,13 +311,13 @@ export const AuthContext = createContext();
 
    
   useEffect(() => {
-        // AsyncStorage.removeItem('token');
+       AsyncStorage.removeItem('token');
     isLoggedIn();
     getProducts();
     
     
      
-    
+      
   }, []);
 
   
